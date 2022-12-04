@@ -17,25 +17,45 @@ namespace ETicaretAPI.Persistence.Repositories
 
         public DbSet<T> Table => context.Set<T>();
 
-        public IQueryable<T> GetAll()
+        public IQueryable<T> GetAll(bool tracking = true)
         {
-            return Table;
+            var query = Table.AsQueryable();
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+            return query;
         }
 
-        public async Task<T> GetByIdAsync(string id)
+        public async Task<T> GetByIdAsync(string id, bool tracking = true)
         {
             //Marker Pattern - firstordefaultasync metodunda string id'yi bulmak için baseEntity'den gelen (x.ID) ile yakaladık
-            return await Table.FindAsync(Guid.Parse(id));
+            var query = Table.AsQueryable();
+            if (!tracking)
+            {
+                query = Table.AsNoTracking();
+            }
+            return await query.FirstOrDefaultAsync(x => x.ID == Guid.Parse(id));
         }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression, bool tracking = true)
         {
-            return await Table.FirstOrDefaultAsync(expression);
+            var query = Table.AsQueryable();
+            if (!tracking)
+            {
+                query = Table.AsNoTracking();
+            }
+            return await query.FirstOrDefaultAsync(expression);
         }
 
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression)
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool tracking = true)
         {
-            return Table.Where(expression);
+            var query = Table.Where(expression);
+            if (!tracking)
+            {
+                query = query.AsNoTracking();
+            }
+            return query;
         }
     }
 }
