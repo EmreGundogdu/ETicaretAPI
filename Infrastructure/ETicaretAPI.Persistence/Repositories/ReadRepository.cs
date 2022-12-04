@@ -25,7 +25,7 @@ namespace ETicaretAPI.Persistence.Repositories
         public async Task<T> GetByIdAsync(string id)
         {
             //Marker Pattern - firstordefaultasync metodunda string id'yi bulmak için baseEntity'den gelen (x.ID) ile yakaladık
-            return await Table.FirstOrDefaultAsync(x => x.ID == Guid.Parse(id));
+            return await Table.FindAsync(Guid.Parse(id));
         }
 
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
