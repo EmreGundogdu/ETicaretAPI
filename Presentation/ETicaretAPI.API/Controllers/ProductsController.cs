@@ -17,14 +17,22 @@ namespace ETicaretAPI.API.Controllers
             this.productReadRepository = productReadRepository;
         }
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            return Ok(productReadRepository.GetAll(false));
+            return Ok(productReadRepository.GetAll(false).Select(x => new
+            {
+                x.ID,
+                x.Name,
+                x.Stock,
+                x.Price,
+                x.CreatedDate,
+                x.UpdatedDate
+            }));
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
-            return Ok(productReadRepository.GetByIdAsync(id, false));
+            return Ok(await productReadRepository.GetByIdAsync(id, false));
         }
         [HttpPost]
         public async Task<IActionResult> Post(VM_Create_Product model)
