@@ -20,12 +20,10 @@ namespace ETicaretAPI.API.Controllers
             this.customerWriteRepository = customerWriteRepository;
             this.orderReadRepository = orderReadRepository;
         }
-        [HttpGet("{id}")]
-        public async Task Get()
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            var data = await orderReadRepository.GetByIdAsync("b24d7aad-cb96-49f5-8d32-0368b976109e");
-            data.Address = "Eskişehir olarak değişti";
-            await orderWriteRepository.SaveAsync();
+            return Ok("M45hqbqW");
         }
     }
 }
