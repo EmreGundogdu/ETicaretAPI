@@ -1,8 +1,11 @@
 ﻿using ETicaretAPI.Application.Abstractions.Storage;
+using ETicaretAPI.Application.Features.Commands.CreateProduct;
+using ETicaretAPI.Application.Features.Queries.GetAllProducts;
 using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Application.ViewModels.Products;
 using ETicaretAPI.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -23,7 +26,8 @@ namespace ETicaretAPI.API.Controllers
         readonly IInvoiceFileWriteRepository invoiceFileWriteRepository;
         readonly IStorageService _storageService;
         readonly IConfiguration configuration;
-        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IInvoiceFileReadRepository ınvoiceFileReadRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IStorageService storageService, IConfiguration configuration)
+        readonly IMediator mediator;
+        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IInvoiceFileReadRepository ınvoiceFileReadRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IStorageService storageService, IConfiguration configuration, IMediator mediator)
         {
             this.productWriteRepository = productWriteRepository;
             this.productReadRepository = productReadRepository;
@@ -35,26 +39,13 @@ namespace ETicaretAPI.API.Controllers
             this.invoiceFileWriteRepository = invoiceFileWriteRepository;
             _storageService = storageService;
             this.configuration = configuration;
+            this.mediator = mediator;
         }
         [HttpGet]
-        public IActionResult Get([FromQuery] Pagination pagination)
+        public async Task<IActionResult> Get([FromQuery]GetAllProductsQueryRequest getAllProductsQueryRequest)
         {
-            var totalCount = productReadRepository.GetAll(false).Count();
-            var products = productReadRepository.GetAll(false).Skip(pagination.Page * pagination.Size).Take(pagination.Size).Select(x => new
-            {
-                x.ID,
-                x.Name,
-                x.Stock,
-                x.Price,
-                x.CreatedDate,
-                x.UpdatedDate
-            });
-            return Ok(new
-            {
-                totalCount,
-                products
-            });
-
+            GetAllProductsQueryResponse data = await mediator.Send(getAllProductsQueryRequest);
+            return Ok(data);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
@@ -62,16 +53,10 @@ namespace ETicaretAPI.API.Controllers
             return Ok(await productReadRepository.GetByIdAsync(id, false));
         }
         [HttpPost]
-        public async Task<IActionResult> Post(VM_Create_Product model)
+        public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
         {
-            await productWriteRepository.AddAsync(new()
-            {
-                Name = model.Name,
-                Price = model.Price,
-                Stock = model.Stock
-            });
-            await productWriteRepository.SaveAsync();
-            return StatusCode((int)HttpStatusCode.Created);
+           CreateProductCommandResponse result = await mediator.Send(createProductCommandRequest);
+            return Ok(result);
         }
         [HttpPut]
         public async Task<IActionResult> Put(VM_Update_Product model)
