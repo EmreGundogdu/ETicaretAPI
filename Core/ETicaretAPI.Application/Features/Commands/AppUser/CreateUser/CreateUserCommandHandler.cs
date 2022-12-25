@@ -18,6 +18,7 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.CreateUser
         {
             IdentityResult result = await userManager.CreateAsync(new()
             {
+                Id=Guid.NewGuid().ToString(),
                 UserName = request.Username,
                 Email = request.Email,
                 NameSurname = request.NameSurname
