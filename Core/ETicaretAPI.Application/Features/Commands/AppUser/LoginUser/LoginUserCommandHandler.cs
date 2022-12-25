@@ -1,4 +1,6 @@
-﻿using ETicaretAPI.Application.Exceptions;
+﻿using ETicaretAPI.Application.Abstractions.Token;
+using ETicaretAPI.Application.DTOs;
+using ETicaretAPI.Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using U = ETicaretAPI.Domain.Entities.Identity;
@@ -9,11 +11,12 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
     {
         readonly UserManager<U.AppUser> userManager;
         readonly SignInManager<U.AppUser> signInManager;
-
-        public LoginUserCommandHandler(UserManager<U.AppUser> userManager, SignInManager<U.AppUser> signInManager)
+        readonly ITokenHandler tokenHandler;
+        public LoginUserCommandHandler(UserManager<U.AppUser> userManager, SignInManager<U.AppUser> signInManager, ITokenHandler tokenHandler)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.tokenHandler = tokenHandler;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
@@ -27,9 +30,14 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password,false);
             if (signInResult.Succeeded)
             {
+                Token token = tokenHandler.CreateAccessToken(5);
+                return new LoginUserSuccessCommandResponse()
+                {
+                    Token = token,
 
+                };
             }
-            return new();
+            throw new AuthenticationErrorException();
         }
     }
 }
