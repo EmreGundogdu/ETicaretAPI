@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Features.Commands.AppUser.CreateUser;
+using ETicaretAPI.Application.Features.Commands.AppUser.FacebookLogin;
 using ETicaretAPI.Application.Features.Commands.AppUser.GoogleLogin;
 using ETicaretAPI.Application.Features.Commands.AppUser.LoginUser;
 using MediatR;
@@ -34,6 +35,13 @@ namespace ETicaretAPI.API.Controllers
         public async Task<IActionResult> GoogleLogin(GoogleLoginCommandRequest googleLoginCommandRequest)
         {
             var response = await mediator.Send(googleLoginCommandRequest);
+            return Ok(response);
+        }
+
+        [HttpPost("facebook-login")]
+        public async Task<IActionResult> FacebookLogin(FacebookLoginCommandRequest facebookLoginCommandRequest)
+        {
+            var response = await mediator.Send(facebookLoginCommandRequest);
             return Ok(response);
         }
     }
