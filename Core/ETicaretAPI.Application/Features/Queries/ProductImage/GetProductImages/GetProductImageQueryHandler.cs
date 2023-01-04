@@ -23,8 +23,8 @@ namespace ETicaretAPI.Application.Features.Queries.ProductImageFile.GetProductIm
             return product.ProductImageFiles.Select(x => new GetProductImageQueryResponse
             {
                 Path = $"{configuration["BaseStorageUrl"]}/{x.Path}",
-                FileName= x.FileName,
-                Id= x.ID
+                FileName = x.FileName,
+                Id = x.ID
             }).ToList();
         }
     }

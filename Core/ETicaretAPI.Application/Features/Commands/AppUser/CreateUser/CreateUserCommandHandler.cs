@@ -1,5 +1,4 @@
-﻿using ETicaretAPI.Application.Exceptions;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using U = ETicaretAPI.Domain.Entities.Identity;
 
@@ -18,7 +17,7 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.CreateUser
         {
             IdentityResult result = await userManager.CreateAsync(new()
             {
-                Id=Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 UserName = request.Username,
                 Email = request.Email,
                 NameSurname = request.NameSurname

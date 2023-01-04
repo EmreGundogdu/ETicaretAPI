@@ -22,12 +22,12 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
             U::AppUser user = await userManager.FindByNameAsync(request.UsernameOrEmail);
-            if (user==null)
+            if (user == null)
                 user = await userManager.FindByEmailAsync(request.UsernameOrEmail);
             if (user == null)
                 throw new NotFoundUserException();
 
-           SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password,false);
+            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (signInResult.Succeeded)
             {
                 Token token = tokenHandler.CreateAccessToken(5);

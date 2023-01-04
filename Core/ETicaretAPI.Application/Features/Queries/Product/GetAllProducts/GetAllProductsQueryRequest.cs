@@ -1,5 +1,4 @@
-﻿using ETicaretAPI.Application.RequestParameters;
-using MediatR;
+﻿using MediatR;
 
 namespace ETicaretAPI.Application.Features.Queries.Product.GetAllProducts
 {

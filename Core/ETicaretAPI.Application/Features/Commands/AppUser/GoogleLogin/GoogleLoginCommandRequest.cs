@@ -2,7 +2,7 @@
 
 namespace ETicaretAPI.Application.Features.Commands.AppUser.GoogleLogin
 {
-    public class GoogleLoginCommandRequest:IRequest<GoogleLoginCommandResponse>
+    public class GoogleLoginCommandRequest : IRequest<GoogleLoginCommandResponse>
     {
         public string Email { get; set; }
         public string FirstName { get; set; }

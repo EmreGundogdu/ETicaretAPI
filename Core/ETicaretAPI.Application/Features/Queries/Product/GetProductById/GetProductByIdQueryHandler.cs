@@ -18,9 +18,9 @@ namespace ETicaretAPI.Application.Features.Queries.Product.GetProductById
             P::Product product = await productReadRepository.GetByIdAsync(request.Id, false);
             return new()
             {
-                Name=product.Name,
-                Price=product.Price,
-                Stock=product.Stock
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock
             };
         }
     }
