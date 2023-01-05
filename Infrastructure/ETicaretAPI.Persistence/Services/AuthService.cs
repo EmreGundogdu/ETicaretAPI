@@ -18,13 +18,15 @@ namespace ETicaretAPI.Persistence.Services
         readonly UserManager<AppUser> userManager;
         readonly SignInManager<AppUser> signInManager;
         readonly ITokenHandler tokenHandler;
-        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager)
+        readonly IUserService userService;
+        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager, IUserService userService)
         {
             httpClient = httpClientFactory.CreateClient();
             this.configuration = configuration;
             this.userManager = userManager;
             this.tokenHandler = tokenHandler;
             this.signInManager = signInManager;
+            this.userService = userService;
         }
         public async Task<Token> CreateUserExternalAsync(AppUser user, string email, string name, UserLoginInfo info, int accessTokenLifeTime)
         {
@@ -49,6 +51,7 @@ namespace ETicaretAPI.Persistence.Services
             {
                 await userManager.AddLoginAsync(user, info);
                 Token token = tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                await userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 10);
                 return token;
             }
             throw new Exception("Invalid External Authentication");
@@ -88,7 +91,7 @@ namespace ETicaretAPI.Persistence.Services
             {
                 throw;
             }
-         
+
         }
 
         public async Task<Token> LoginAsync(string userNameOrEmail, string password, int accessTokenLifeTime)
@@ -103,9 +106,13 @@ namespace ETicaretAPI.Persistence.Services
             if (signInResult.Succeeded)
             {
                 Token token = tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                await userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 10);
                 return token;
             }
-            throw new AuthenticationErrorException();
+            else
+            {
+                throw new AuthenticationErrorException();
+            }
         }
     }
 }
