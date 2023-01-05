@@ -23,6 +23,33 @@ namespace ETicaretAPI.Persistence.Services
             this.userManager = userManager;
             this.tokenHandler = tokenHandler;
         }
+        public async Task<Token> CreateUserExternalAsync(AppUser user, string email, string name, UserLoginInfo info, int accessTokenLifeTime)
+        {
+            bool result = user != null;
+            if (user == null)
+            {
+                user = await userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    user = new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Email = email,
+                        UserName = email,
+                        NameSurname = name
+                    };
+                    var identityResult = await userManager.CreateAsync(user);
+                    result = identityResult.Succeeded;
+                }
+            }
+            if (result)
+            {
+                await userManager.AddLoginAsync(user, info);
+                Token token = tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                return token;
+            }
+            throw new Exception("Invalid External Authentication");
+        }
 
         public async Task<Token> FacebookLoginAsync(string authToken, int accessTokenLifeTime)
         {
@@ -36,29 +63,7 @@ namespace ETicaretAPI.Persistence.Services
                 FacebookUserInfoResponse? facebookUserInfoResponse = JsonSerializer.Deserialize<FacebookUserInfoResponse>(userInfoResponse);
                 var info = new UserLoginInfo("FACEBOOK", facebookUserAccessTokenValidation.Data.UserId, "FACEBOOK");
                 AppUser user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                bool result = user != null;
-                if (user == null)
-                {
-                    user = await userManager.FindByEmailAsync(facebookUserInfoResponse?.Email);
-                    if (user == null)
-                    {
-                        user = new()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Email = facebookUserInfoResponse.Email,
-                            UserName = facebookUserInfoResponse.Email,
-                            NameSurname = facebookUserInfoResponse.Name
-                        };
-                        var identityResult = await userManager.CreateAsync(user);
-                        result = identityResult.Succeeded;
-                    }
-                }
-                if (result)
-                {
-                    await userManager.AddLoginAsync(user, info);
-                    Token token = tokenHandler.CreateAccessToken(accessTokenLifeTime);
-                    return token;
-                }
+                return await CreateUserExternalAsync(user, facebookUserInfoResponse.Email, facebookUserInfoResponse.Name, info, accessTokenLifeTime);
             }
             throw new Exception("Invalid External Authentication");
         }
@@ -72,29 +77,7 @@ namespace ETicaretAPI.Persistence.Services
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
             var info = new UserLoginInfo("GOOGLE", payload.Subject, "GOOGLE");
             AppUser user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            bool result = user != null;
-            if (user == null)
-            {
-                user = await userManager.FindByEmailAsync(payload.Email);
-                if (user == null)
-                {
-                    user = new()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Email = payload.Email,
-                        UserName = payload.Email,
-                        NameSurname = payload.Name
-                    };
-                    var identityResult = await userManager.CreateAsync(user);
-                    result = identityResult.Succeeded;
-                }
-            }
-            if (result)
-                await userManager.AddLoginAsync(user, info);
-            else
-                throw new Exception("Invalid External Authentication");
-            Token token = tokenHandler.CreateAccessToken(5);
-            return token;
+            return await CreateUserExternalAsync(user, payload.Email, payload.Name, info, accessTokenLifeTime);
         }
 
         public Task LoginAsync()
