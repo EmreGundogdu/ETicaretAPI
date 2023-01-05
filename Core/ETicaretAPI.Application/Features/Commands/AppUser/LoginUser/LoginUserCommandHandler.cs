@@ -1,4 +1,5 @@
-﻿using ETicaretAPI.Application.Abstractions.Token;
+﻿using ETicaretAPI.Application.Abstractions.Services.Authentication;
+using ETicaretAPI.Application.Abstractions.Token;
 using ETicaretAPI.Application.DTOs;
 using ETicaretAPI.Application.Exceptions;
 using MediatR;
@@ -9,35 +10,20 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
 {
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, LoginUserCommandResponse>
     {
-        readonly UserManager<U.AppUser> userManager;
-        readonly SignInManager<U.AppUser> signInManager;
-        readonly ITokenHandler tokenHandler;
-        public LoginUserCommandHandler(UserManager<U.AppUser> userManager, SignInManager<U.AppUser> signInManager, ITokenHandler tokenHandler)
+        readonly IInternalAuthentication internalAuthentication;
+
+        public LoginUserCommandHandler(IInternalAuthentication internalAuthentication)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
-            this.tokenHandler = tokenHandler;
+            this.internalAuthentication = internalAuthentication;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
-            U::AppUser user = await userManager.FindByNameAsync(request.UsernameOrEmail);
-            if (user == null)
-                user = await userManager.FindByEmailAsync(request.UsernameOrEmail);
-            if (user == null)
-                throw new NotFoundUserException();
-
-            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-            if (signInResult.Succeeded)
+            var token = await internalAuthentication.LoginAsync(request.UsernameOrEmail, request.Password, 15);
+            return new LoginUserSuccessCommandResponse()
             {
-                Token token = tokenHandler.CreateAccessToken(5);
-                return new LoginUserSuccessCommandResponse()
-                {
-                    Token = token,
-
-                };
-            }
-            throw new AuthenticationErrorException();
+                Token = token
+            };
         }
     }
 }

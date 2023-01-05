@@ -2,6 +2,7 @@
 using ETicaretAPI.Application.Abstractions.Token;
 using ETicaretAPI.Application.DTOs;
 using ETicaretAPI.Application.DTOs.Facebook;
+using ETicaretAPI.Application.Exceptions;
 using ETicaretAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -15,13 +16,15 @@ namespace ETicaretAPI.Persistence.Services
         readonly HttpClient httpClient;
         readonly IConfiguration configuration;
         readonly UserManager<AppUser> userManager;
+        readonly SignInManager<AppUser> signInManager;
         readonly ITokenHandler tokenHandler;
-        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<AppUser> userManager, ITokenHandler tokenHandler)
+        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager)
         {
             httpClient = httpClientFactory.CreateClient();
             this.configuration = configuration;
             this.userManager = userManager;
             this.tokenHandler = tokenHandler;
+            this.signInManager = signInManager;
         }
         public async Task<Token> CreateUserExternalAsync(AppUser user, string email, string name, UserLoginInfo info, int accessTokenLifeTime)
         {
@@ -74,15 +77,35 @@ namespace ETicaretAPI.Persistence.Services
             {
                 Audience = new List<string> { $"{configuration["ExternalLoginSettings:Google:ClientId"]}" }
             };
-            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
-            var info = new UserLoginInfo("GOOGLE", payload.Subject, "GOOGLE");
-            AppUser user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            return await CreateUserExternalAsync(user, payload.Email, payload.Name, info, accessTokenLifeTime);
+            try
+            {
+                var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+                var info = new UserLoginInfo("GOOGLE", payload.Subject, "GOOGLE");
+                AppUser user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                return await CreateUserExternalAsync(user, payload.Email, payload.Name, info, accessTokenLifeTime);
+            }
+            catch
+            {
+                throw;
+            }
+         
         }
 
-        public Task LoginAsync()
+        public async Task<Token> LoginAsync(string userNameOrEmail, string password, int accessTokenLifeTime)
         {
-            throw new NotImplementedException();
+            AppUser user = await userManager.FindByNameAsync(userNameOrEmail);
+            if (user == null)
+                user = await userManager.FindByEmailAsync(userNameOrEmail);
+            if (user == null)
+                throw new NotFoundUserException();
+
+            SignInResult signInResult = await signInManager.CheckPasswordSignInAsync(user, password, false);
+            if (signInResult.Succeeded)
+            {
+                Token token = tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                return token;
+            }
+            throw new AuthenticationErrorException();
         }
     }
 }
