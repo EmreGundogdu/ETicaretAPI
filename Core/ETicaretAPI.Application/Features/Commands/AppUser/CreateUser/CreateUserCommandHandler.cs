@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using ETicaretAPI.Application.Abstractions.Services;
+using ETicaretAPI.Application.DTOs.User;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using U = ETicaretAPI.Domain.Entities.Identity;
 
@@ -6,31 +8,28 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
-        readonly UserManager<U.AppUser> userManager;
+        readonly IUserService userService;
 
-        public CreateUserCommandHandler(UserManager<U.AppUser> userManager)
+        public CreateUserCommandHandler(IUserService userService)
         {
-            this.userManager = userManager;
+            this.userService = userService;
         }
 
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await userManager.CreateAsync(new()
+            CreateUserResponse createUserResponse =await userService.CreateAsync(new()
             {
-                Id = Guid.NewGuid().ToString(),
-                UserName = request.Username,
                 Email = request.Email,
-                NameSurname = request.NameSurname
-            }, request.Password);
-            CreateUserCommandResponse response = new() { Succeeded = result.Succeeded };
-            if (result.Succeeded)
-                response.Message = "Kullanıcı Kaydı Başarıyla Tamamlandı";
-            else
-                foreach (var item in result.Errors)
-                {
-                    response.Message += $"{item.Code} - {item.Description}<br>";
-                }
-            return response;
+                NameSurname = request.NameSurname,
+                Password = request.Password,
+                PasswordConfirm = request.PasswordConfirm,
+                Username = request.Username
+            });
+            return new()
+            {
+                Message = createUserResponse.Message,
+                Succeeded = createUserResponse.Succeeded
+            };
         }
     }
 }
