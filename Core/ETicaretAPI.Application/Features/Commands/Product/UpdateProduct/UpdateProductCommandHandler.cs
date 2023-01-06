@@ -1,5 +1,6 @@
 ﻿using ETicaretAPI.Application.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ETicaretAPI.Application.Features.Commands.Product.UpdateProduct
 {
@@ -7,10 +8,12 @@ namespace ETicaretAPI.Application.Features.Commands.Product.UpdateProduct
     {
         readonly IProductReadRepository productReadRepository;
         readonly IProductWriteRepository productWriteRepository;
-        public UpdateProductCommandHandler(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository)
+        readonly ILogger<UpdateProductCommandHandler> logger;
+        public UpdateProductCommandHandler(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, ILogger<UpdateProductCommandHandler> logger)
         {
             this.productReadRepository = productReadRepository;
             this.productWriteRepository = productWriteRepository;
+            this.logger = logger;
         }
 
         public async Task<UpdateProductCommandResponse> Handle(UpdateProductCommandRequest request, CancellationToken cancellationToken)
