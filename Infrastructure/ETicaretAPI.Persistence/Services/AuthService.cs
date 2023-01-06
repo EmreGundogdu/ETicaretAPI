@@ -107,7 +107,7 @@ namespace ETicaretAPI.Persistence.Services
             if (signInResult.Succeeded)
             {
                 Token token = tokenHandler.CreateAccessToken(accessTokenLifeTime,user);
-                await userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 10);
+                await userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
                 return token;
             }
             else
@@ -122,7 +122,7 @@ namespace ETicaretAPI.Persistence.Services
             if (appUser != null && appUser?.RefreshTokenEndDate > DateTime.UtcNow)
             {
                 Token token = tokenHandler.CreateAccessToken(15,appUser);
-                await userService.UpdateRefreshToken(token.RefreshToken, appUser, token.Expiration, 15);
+                await userService.UpdateRefreshToken(token.RefreshToken, appUser, token.Expiration, 300);
                 return token;
             }
             else
