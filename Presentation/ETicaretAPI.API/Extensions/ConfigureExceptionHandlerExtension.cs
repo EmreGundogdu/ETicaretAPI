@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
 using System.Net.Mime;
-using System.Reflection;
 using System.Text.Json;
 
 namespace ETicaretAPI.API.Extensions

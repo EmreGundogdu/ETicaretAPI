@@ -1,12 +1,5 @@
-﻿using ETicaretAPI.Application.Abstractions.Services;
-using ETicaretAPI.Application.Abstractions.Services.Authentication;
-using ETicaretAPI.Application.Abstractions.Token;
-using ETicaretAPI.Application.DTOs;
-using ETicaretAPI.Application.DTOs.Facebook;
+﻿using ETicaretAPI.Application.Abstractions.Services.Authentication;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using System.Text.Json;
-using P = ETicaretAPI.Domain.Entities.Identity;
 
 namespace ETicaretAPI.Application.Features.Commands.AppUser.FacebookLogin
 {
