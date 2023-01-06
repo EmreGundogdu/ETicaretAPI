@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ETicaretAPI.Application.Abstractions.Hubs;
 
 namespace ETicaretAPI.SignalR.HubServices
 {
-    public class ProductHubService
+    public class ProductHubService : IProductHubService
     {
+
+        public Task ProductAddedMessageAsync(string message)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
