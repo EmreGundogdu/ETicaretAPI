@@ -77,5 +77,11 @@ namespace ETicaretAPI.API.Controllers
             var result = await mediator.Send(removeProductImageCommandRequest);
             return Ok();
         }
+        [HttpPut("[action]/{imageId}/{productId}")]
+        [Authorize(AuthenticationSchemes = "Admin")]
+        public async Task<IActionResult> ChangeShowcaseImage()
+        {
+            return Ok();
+        }
     }
 }
