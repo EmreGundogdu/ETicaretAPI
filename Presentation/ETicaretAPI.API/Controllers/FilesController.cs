@@ -17,7 +17,10 @@ namespace ETicaretAPI.API.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetBaseUrl()
         {
-            return Ok(configuration["BaseStorageUrl"]);
+            return Ok(new
+            {
+                Url = configuration["BaseStorageUrl"]
+            });
         }
     }
 }
