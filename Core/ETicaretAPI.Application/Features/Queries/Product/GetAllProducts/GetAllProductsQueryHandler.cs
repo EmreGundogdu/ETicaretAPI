@@ -1,5 +1,6 @@
 ﻿using ETicaretAPI.Application.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ETicaretAPI.Application.Features.Queries.Product.GetAllProducts
@@ -18,14 +19,15 @@ namespace ETicaretAPI.Application.Features.Queries.Product.GetAllProducts
         {
             logger.LogInformation("Get all products");
             var totalCount = productReadRepository.GetAll(false).Count();
-            var products = productReadRepository.GetAll(false).Skip(request.Page * request.Size).Take(request.Size).Select(x => new
+            var products = productReadRepository.GetAll(false).Skip(request.Page * request.Size).Take(request.Size).Include(x=>x.ProductImageFiles).Select(x => new
             {
                 x.ID,
                 x.Name,
                 x.Stock,
                 x.Price,
                 x.CreatedDate,
-                x.UpdatedDate
+                x.UpdatedDate,
+                x.ProductImageFiles
             }).ToList();
             return new GetAllProductsQueryResponse
             {
