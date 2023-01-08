@@ -11,7 +11,7 @@ namespace ETicaretAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes ="Admin")]
     public class BasketsController : ControllerBase
     {
         readonly IMediator mediator;
@@ -21,7 +21,7 @@ namespace ETicaretAPI.API.Controllers
             this.mediator = mediator;
         }
         [HttpGet]
-        public async Task<IActionResult> GetBasketItems(GetBasketItemsQueryRequest getBasketItemsQueryRequest)
+        public async Task<IActionResult> GetBasketItems([FromQuery]GetBasketItemsQueryRequest getBasketItemsQueryRequest)
         {
             List<GetBasketItemsQueryResponse> response = await mediator.Send(getBasketItemsQueryRequest);
             return Ok(response);
