@@ -22,8 +22,8 @@ namespace ETicaretAPI.Persistence.Contexts
         public DbSet<BasketItem> BasketItems { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Basket>().HasKey(x => x.ID);
-            builder.Entity<Basket>().HasOne(x => x.Order).WithOne(x=>x.Basket).HasForeignKey<Basket>(x=>x.OrderId);
+            builder.Entity<Order>().HasKey(x => x.ID);
+            builder.Entity<Basket>().HasOne(x => x.Order).WithOne(x=>x.Basket).HasForeignKey<Order>(x=>x.ID);
             base.OnModelCreating(builder);
         }
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
