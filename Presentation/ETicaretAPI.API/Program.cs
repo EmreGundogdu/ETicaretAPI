@@ -38,6 +38,7 @@ Logger logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Host.UseSerilog(logger);
 
+builder.Services.AddHttpContextAccessor(); //Client'tan gelen request neticesinde oluturulan HttpContext nesnesine katmanlardaki class'lar üzerinde(business logic) eriþebilmemizi saðlayan bir servistir.
 builder.Services.AddPersistenceServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
