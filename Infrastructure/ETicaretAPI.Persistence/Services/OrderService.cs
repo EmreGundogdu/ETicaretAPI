@@ -24,7 +24,7 @@ namespace ETicaretAPI.Persistence.Services
             {
                 Address = createOrder.Address,
                 Description = createOrder.Description,
-                BasketId = Guid.Parse(createOrder.BasketId)
+                ID = Guid.Parse(createOrder.BasketId)
             });
             await orderWriteRepository.SaveAsync();
         }
