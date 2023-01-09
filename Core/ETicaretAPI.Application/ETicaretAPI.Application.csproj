@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Folder Include="Services\" />
+    <Folder Include="ViewModels\Orders\" />
   </ItemGroup>
 
 </Project>
