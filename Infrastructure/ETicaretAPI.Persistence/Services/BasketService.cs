@@ -100,10 +100,19 @@ namespace ETicaretAPI.Persistence.Services
         public async Task UpdateQuantityAsync(VM_Update_BasketItem basketItem)
         {
             BasketItem _basketItem = await basketItemReadRepository.GetByIdAsync(basketItem.BasketItemId);
-            if (_basketItem!=null)
+            if (_basketItem != null)
             {
                 _basketItem.Quantity = basketItem.Quantity;
                 await basketItemWriteRepository.SaveAsync();
+            }
+        }
+
+        public Basket? GetUserActiveBasketAsync
+        {
+            get
+            {
+                Basket? basket = ContextUser().Result;
+                return basket;
             }
         }
     }
