@@ -46,5 +46,24 @@ namespace ETicaretAPI.Persistence.Services
                 }).ToListAsync()
             };
         }
+
+        public async Task<Order> GetOrderByIdAsync(string id)
+        {
+            var data = await orderReadRepository.Table.Include(x => x.Basket).ThenInclude(x => x.BasketItems).ThenInclude(x => x.Product).FirstOrDefaultAsync(x => x.ID == Guid.Parse(id));
+            return new()
+            {
+                Id = data.ID.ToString(),
+                BasketItems = data.Basket.BasketItems.Select(x => new
+                {
+                    x.Product.Name,
+                    x.Product.Price,
+                    x.Quantity
+                }),
+                Address = data.Address,
+                CreatedDate = data.CreatedDate,
+                Description = data.Description,
+                OrderCode = data.OrderCode
+            };
+        }
     }
 }
