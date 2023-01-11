@@ -32,17 +32,18 @@ namespace ETicaretAPI.Persistence.Services
         public async Task<ListOrder> GetAllOrdersAsync(int page, int pageSize)
         {
             var query = orderReadRepository.Table.Include(x => x.Basket).ThenInclude(x => x.User).Include(x => x.Basket).ThenInclude(x => x.BasketItems).ThenInclude(x => x.Product);
-             var data = query.Skip(page * pageSize).Take(pageSize);
+            var data = query.Skip(page * pageSize).Take(pageSize);
             return new()
             {
                 TotalCount = await query.CountAsync(),
                 Orders = await data.Select(x => new
                 {
+                    Id = x.ID,
                     CreatedDate = x.CreatedDate,
                     OrderCode = x.OrderCode,
                     TotalPrice = x.Basket.BasketItems.Sum(x => x.Product.Price * x.Quantity),
                     UserName = x.Basket.User.UserName
-                }).ToListAsync();
+                }).ToListAsync()
             };
         }
     }
