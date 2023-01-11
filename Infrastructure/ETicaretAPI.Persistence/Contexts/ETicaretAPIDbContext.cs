@@ -24,6 +24,7 @@ namespace ETicaretAPI.Persistence.Contexts
         {
             builder.Entity<Order>().HasKey(x => x.ID);
             builder.Entity<Basket>().HasOne(x => x.Order).WithOne(x=>x.Basket).HasForeignKey<Order>(x=>x.ID);
+            builder.Entity<Order>().HasIndex(x => x.OrderCode).IsUnique();
             base.OnModelCreating(builder);
         }
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
