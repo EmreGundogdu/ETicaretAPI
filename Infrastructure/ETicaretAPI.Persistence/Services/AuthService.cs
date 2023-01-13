@@ -6,8 +6,10 @@ using ETicaretAPI.Application.Exceptions;
 using ETicaretAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Text;
 using System.Text.Json;
 
 namespace ETicaretAPI.Persistence.Services
@@ -20,7 +22,8 @@ namespace ETicaretAPI.Persistence.Services
         readonly SignInManager<AppUser> signInManager;
         readonly ITokenHandler tokenHandler;
         readonly IUserService userService;
-        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager, IUserService userService)
+        readonly IMailService mailService;
+        public AuthService(IHttpClientFactory httpClientFactory, IConfiguration configuration, UserManager<AppUser> userManager, ITokenHandler tokenHandler, SignInManager<AppUser> signInManager, IUserService userService, IMailService mailService)
         {
             httpClient = httpClientFactory.CreateClient();
             this.configuration = configuration;
@@ -28,6 +31,7 @@ namespace ETicaretAPI.Persistence.Services
             this.tokenHandler = tokenHandler;
             this.signInManager = signInManager;
             this.userService = userService;
+            this.mailService = mailService;
         }
         public async Task<Token> CreateUserExternalAsync(AppUser user, string email, string name, UserLoginInfo info, int accessTokenLifeTime)
         {
@@ -113,6 +117,18 @@ namespace ETicaretAPI.Persistence.Services
             else
             {
                 throw new AuthenticationErrorException();
+            }
+        }
+
+        public async Task PasswordResetAsync(string email)
+        {
+            AppUser appUser = await userManager.FindByEmailAsync(email);
+            if (appUser != null)
+            {
+                string resetToken = await userManager.GeneratePasswordResetTokenAsync(appUser);
+                byte[] tokenBytes = Encoding.UTF8.GetBytes(resetToken);
+                resetToken = WebEncoders.Base64UrlEncode(tokenBytes);
+                await mailService.SendPasswordResetMailAsync(email, appUser.Id, resetToken);
             }
         }
 

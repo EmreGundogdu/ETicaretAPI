@@ -4,6 +4,6 @@ namespace ETicaretAPI.Application.Abstractions.Services
 {
     public interface IAuthService : IInternalAuthentication, IExternalAuthentication
     {
-
+        Task PasswordResetAsync(string email);
     }
 }

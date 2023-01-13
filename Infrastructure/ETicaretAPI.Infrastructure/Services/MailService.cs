@@ -40,5 +40,16 @@ namespace ETicaretAPI.Infrastructure.Services
             smtp.Host = configuration["Mail:Host"];
             await smtp.SendMailAsync(mailMessage);
         }
+
+        public async Task SendPasswordResetMailAsync(string to, string userId, string resetToken)
+        {
+            StringBuilder mail = new();
+            mail.AppendLine("Merhaba<br>Eğer yeni şifre talebinde bulunduysanız aşağıdaki linkten şifrenizi yenileyebilirsiniz.<br><a target=\"_blank\" href=\".../");
+            mail.AppendLine(userId);
+            mail.AppendLine("/");
+            mail.AppendLine(resetToken);
+            mail.AppendLine("\">Yeni şifre talebi için tıklayınız...</a></strong><br><br><span style=\"font-size:12px;\">NOT: Eğer li bu talper tarafınızca gerçekleştirilmemişse lütfen bu maili ciddiye almayınız.</span><br>Saygılarımızla...<br><br><br> Gndgd");
+            await SendMailAsync(to, "Şifre Yenileme", mail.ToString());
+        }
     }
 }
