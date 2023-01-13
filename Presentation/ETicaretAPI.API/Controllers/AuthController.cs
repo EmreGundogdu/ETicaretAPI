@@ -1,9 +1,11 @@
 ﻿using ETicaretAPI.Application.Features.Commands.AppUser.FacebookLogin;
 using ETicaretAPI.Application.Features.Commands.AppUser.GoogleLogin;
 using ETicaretAPI.Application.Features.Commands.AppUser.LoginUser;
+using ETicaretAPI.Application.Features.Commands.AppUser.PasswordReset;
 using ETicaretAPI.Application.Features.Commands.AppUser.RefreshTokenLogin;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace ETicaretAPI.API.Controllers
 {
@@ -43,6 +45,13 @@ namespace ETicaretAPI.API.Controllers
         public async Task<IActionResult> FacebookLogin(FacebookLoginCommandRequest facebookLoginCommandRequest)
         {
             var response = await mediator.Send(facebookLoginCommandRequest);
+            return Ok(response);
+        }
+
+        [HttpPost("password-reset")]
+        public async Task<IActionResult> PasswordReset(PasswordResetCommandRequest passwordResetCommandRequest)
+        {
+            var response = await mediator.Send(passwordResetCommandRequest);
             return Ok(response);
         }
     }
