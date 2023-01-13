@@ -3,6 +3,7 @@ using ETicaretAPI.Application.Abstractions.Token;
 using ETicaretAPI.Application.DTOs;
 using ETicaretAPI.Application.DTOs.Facebook;
 using ETicaretAPI.Application.Exceptions;
+using ETicaretAPI.Application.Helpers;
 using ETicaretAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -126,8 +127,7 @@ namespace ETicaretAPI.Persistence.Services
             if (appUser != null)
             {
                 string resetToken = await userManager.GeneratePasswordResetTokenAsync(appUser);
-                byte[] tokenBytes = Encoding.UTF8.GetBytes(resetToken);
-                resetToken = WebEncoders.Base64UrlEncode(tokenBytes);
+                resetToken = resetToken.UrlEncode();
                 await mailService.SendPasswordResetMailAsync(email, appUser.Id, resetToken);
             }
         }
@@ -152,8 +152,7 @@ namespace ETicaretAPI.Persistence.Services
             AppUser appUser = await userManager.FindByIdAsync(userId);
             if (appUser != null)
             {
-                byte[] tokenBytes = WebEncoders.Base64UrlDecode(resetToken);
-                resetToken = Encoding.UTF8.GetString(tokenBytes);
+                resetToken = resetToken.UrlDecode();
                 return await userManager.VerifyUserTokenAsync(appUser, userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", resetToken);
             }
             return false;
