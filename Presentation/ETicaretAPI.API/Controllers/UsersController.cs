@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Features.Commands.AppUser.CreateUser;
+using ETicaretAPI.Application.Features.Commands.AppUser.UpdatePassword;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,19 @@ namespace ETicaretAPI.API.Controllers
         {
             this.mediator = mediator;
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserCommandRequest createUserCommandRequest)
         {
-            CreateUserCommandResponse createUserCommandResponse = await mediator.Send(createUserCommandRequest);
-            return Ok(createUserCommandResponse);
+            var respose = await mediator.Send(createUserCommandRequest);
+            return Ok(respose);
+        }
+
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody]UpdatePasswordCommandRequest updatePasswordCommandRequest)
+        {
+            var response = await mediator.Send(updatePasswordCommandRequest);
+            return Ok(response);
         }
     }
 }
