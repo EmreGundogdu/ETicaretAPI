@@ -36,7 +36,7 @@ namespace ETicaretAPI.Persistence.Services
             return response;
         }
 
-        public async Task UpdatePassword(string userId, string resetToken, string newPassword)
+        public async Task UpdatePasswordAsync(string userId, string resetToken, string newPassword)
         {
            AppUser appUser = await userManager.FindByIdAsync(userId);
             if (appUser!=null)
@@ -50,7 +50,7 @@ namespace ETicaretAPI.Persistence.Services
             }
         }
 
-        public async Task UpdateRefreshToken(string refreshToken, AppUser user, DateTime accessTokenDate, int addOnAccessTokenDate)
+        public async Task UpdateRefreshTokenAsync(string refreshToken, AppUser user, DateTime accessTokenDate, int addOnAccessTokenDate)
         {
             if (user != null)
             {
