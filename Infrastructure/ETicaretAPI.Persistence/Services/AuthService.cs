@@ -154,7 +154,7 @@ namespace ETicaretAPI.Persistence.Services
             {
                 byte[] tokenBytes = WebEncoders.Base64UrlDecode(resetToken);
                 resetToken = Encoding.UTF8.GetString(tokenBytes);
-                return await userManager.VerifyUserTokenAsync(appUser, userManager.Options.Tokens.PasswordResetTokenProvider, "ResetToken", resetToken);
+                return await userManager.VerifyUserTokenAsync(appUser, userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", resetToken);
             }
             return false;
         }
