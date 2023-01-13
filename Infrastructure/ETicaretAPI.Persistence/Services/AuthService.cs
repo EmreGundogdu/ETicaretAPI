@@ -146,5 +146,17 @@ namespace ETicaretAPI.Persistence.Services
                 throw new NotFoundUserException();
             }
         }
+
+        public async Task<bool> VerifyResetTokenAsync(string resetToken, string userId)
+        {
+            AppUser appUser = await userManager.FindByIdAsync(userId);
+            if (appUser != null)
+            {
+                byte[] tokenBytes = WebEncoders.Base64UrlDecode(resetToken);
+                resetToken = Encoding.UTF8.GetString(tokenBytes);
+                return await userManager.VerifyUserTokenAsync(appUser, userManager.Options.Tokens.PasswordResetTokenProvider, "ResetToken", resetToken);
+            }
+            return false;
+        }
     }
 }
