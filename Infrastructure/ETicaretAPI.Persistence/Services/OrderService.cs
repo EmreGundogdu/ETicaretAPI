@@ -9,10 +9,17 @@ namespace ETicaretAPI.Persistence.Services
     {
         readonly IOrderWriteRepository orderWriteRepository;
         readonly IOrderReadRepository orderReadRepository;
-        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository)
+        readonly ICompletedOrderWriteRepository completedOrderWriteRepository;
+        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository, ICompletedOrderWriteRepository completedOrderWriteRepository)
         {
             this.orderWriteRepository = orderWriteRepository;
             this.orderReadRepository = orderReadRepository;
+            this.completedOrderWriteRepository = completedOrderWriteRepository;
+        }
+
+        public Task CompleteOrderAsync(string id)
+        {
+
         }
 
         public async Task CreateOrder(CreateOrder createOrder)
