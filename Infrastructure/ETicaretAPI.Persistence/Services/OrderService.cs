@@ -96,7 +96,8 @@ namespace ETicaretAPI.Persistence.Services
                 Address = data2.Address,
                 CreatedDate = data2.CreatedDate,
                 Description = data2.Description,
-                OrderCode = data2.OrderCode
+                OrderCode = data2.OrderCode,
+                Completed = data2.Completed
             };
         }
     }
