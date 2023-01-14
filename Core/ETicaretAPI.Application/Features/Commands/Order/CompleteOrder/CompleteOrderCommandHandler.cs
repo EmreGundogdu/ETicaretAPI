@@ -12,9 +12,10 @@ namespace ETicaretAPI.Application.Features.Commands.Order.CompleteOrder
             this.orderService = orderService;
         }
 
-        public Task<CompleteOrderCommandResponse> Handle(CompleteOrderCommandRequest request, CancellationToken cancellationToken)
+        public async Task<CompleteOrderCommandResponse> Handle(CompleteOrderCommandRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await orderService.CompleteOrderAsync(request.Id);
+            return new();
         }
     }
 }

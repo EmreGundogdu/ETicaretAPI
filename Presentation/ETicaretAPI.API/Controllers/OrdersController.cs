@@ -1,4 +1,5 @@
-﻿using ETicaretAPI.Application.Features.Commands.Order.CreateOrder;
+﻿using ETicaretAPI.Application.Features.Commands.Order.CompleteOrder;
+using ETicaretAPI.Application.Features.Commands.Order.CreateOrder;
 using ETicaretAPI.Application.Features.Queries.Order.GetOrderById;
 using ETicaretAPI.Application.Features.Queries.Order.GetOrders;
 using MediatR;
@@ -21,22 +22,29 @@ namespace ETicaretAPI.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetOrders([FromQuery] GetAllOrdersQueryRequest getAllOrdersQueryRequest)
         {
-            var result = await mediator.Send(getAllOrdersQueryRequest);
-            return Ok(result);
+            var response = await mediator.Send(getAllOrdersQueryRequest);
+            return Ok(response);
         }
 
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetOrderById([FromRoute] GetOrderByIdQueryRequest getOrderByIdQueryRequest)
         {
-            var result = await mediator.Send(getOrderByIdQueryRequest);
-            return Ok(result);
+            var response = await mediator.Send(getOrderByIdQueryRequest);
+            return Ok(response);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateOrder(CreateOrderCommandRequest createOrderCommandRequest)
         {
-            var result = await mediator.Send(createOrderCommandRequest);
-            return Ok(result);
+            var response = await mediator.Send(createOrderCommandRequest);
+            return Ok(response);
+        }
+
+        [HttpGet("complete-order/{Id}")]
+        public async Task<IActionResult> CompleteOrder([FromRoute] CompleteOrderCommandRequest completeOrderCommandRequest)
+        {
+            var response = await mediator.Send(completeOrderCommandRequest);
+            return Ok(response);
         }
     }
 }

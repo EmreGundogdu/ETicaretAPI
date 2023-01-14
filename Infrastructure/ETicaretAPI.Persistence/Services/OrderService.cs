@@ -17,8 +17,14 @@ namespace ETicaretAPI.Persistence.Services
             this.completedOrderWriteRepository = completedOrderWriteRepository;
         }
 
-        public Task CompleteOrderAsync(string id)
+        public async Task CompleteOrderAsync(string id)
         {
+            var order = await orderReadRepository.GetByIdAsync(id);
+            if (order != null)
+            {
+                await completedOrderWriteRepository.AddAsync(new() { OrderId = Guid.Parse(id) });
+                await completedOrderWriteRepository.SaveAsync();
+            }
 
         }
 
