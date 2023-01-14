@@ -3,6 +3,7 @@ using ETicaretAPI.Application.DTOs.Order;
 using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using CompletedOrder = ETicaretAPI.Application.DTOs.Order.CompletedOrder;
 
 namespace ETicaretAPI.Persistence.Services
 {
@@ -20,15 +21,21 @@ namespace ETicaretAPI.Persistence.Services
             this.completedOrderReadRepository = completedOrderReadRepository;
         }
 
-        public async Task CompleteOrderAsync(string id)
+        public async Task<(bool, CompletedOrder)> CompleteOrderAsync(string id)
         {
-            var order = await orderReadRepository.GetByIdAsync(id);
+            var order = await orderReadRepository.Table.Include(x => x.Basket).ThenInclude(x => x.User).FirstOrDefaultAsync(x => x.ID == Guid.Parse(id));
             if (order != null)
             {
                 await completedOrderWriteRepository.AddAsync(new() { OrderId = Guid.Parse(id) });
-                await completedOrderWriteRepository.SaveAsync();
+                return (await completedOrderWriteRepository.SaveAsync() > 0, new()
+                {
+                    OrderCode = order.OrderCode,
+                    OrderDate = order.CreatedDate,
+                    Username = order.Basket.User.UserName,
+                    UserSurname = order.Basket.User.NameSurname,
+                });
             }
-
+            return (false, null);
         }
 
         public async Task CreateOrder(CreateOrder createOrder)
@@ -71,19 +78,19 @@ namespace ETicaretAPI.Persistence.Services
         public async Task<Application.DTOs.Order.Order> GetOrderByIdAsync(string id)
         {
             var data = orderReadRepository.Table.Include(x => x.Basket).ThenInclude(x => x.BasketItems).ThenInclude(x => x.Product);
-            var data2 = await(from order in data
-                              join completedOrder in completedOrderReadRepository.Table on order.ID equals completedOrder.OrderId into co
-                              from _co in co.DefaultIfEmpty()
-                              select new
-                              {
-                                  Id = order.ID,
-                                  CreatedDate = order.CreatedDate,
-                                  OrderCode = order.OrderCode,
-                                  Basket = order.Basket,
-                                  Completed = _co != null ? true : false,
-                                  Address = order.Address,
-                                  Description = order.Description
-                              }).FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+            var data2 = await (from order in data
+                               join completedOrder in completedOrderReadRepository.Table on order.ID equals completedOrder.OrderId into co
+                               from _co in co.DefaultIfEmpty()
+                               select new
+                               {
+                                   Id = order.ID,
+                                   CreatedDate = order.CreatedDate,
+                                   OrderCode = order.OrderCode,
+                                   Basket = order.Basket,
+                                   Completed = _co != null ? true : false,
+                                   Address = order.Address,
+                                   Description = order.Description
+                               }).FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
             return new()
             {
                 Id = data2.Id.ToString(),

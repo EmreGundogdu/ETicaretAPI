@@ -1,12 +1,8 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ETicaretAPI.Infrastructure.Services
 {
@@ -17,6 +13,13 @@ namespace ETicaretAPI.Infrastructure.Services
         public MailService(IConfiguration configuration)
         {
             this.configuration = configuration;
+        }
+
+        public async Task SendCompletedOrderMailAsync(string to, string orderCode, DateTime orderDate, string userName, string userSurname)
+        {
+            string mail = $"Merhaba {userName} {userSurname}<br>" +
+                $"{orderDate} tarihinde vermiş olduğunuz {orderCode} kodlu siparişiniz tamamlamıştır";
+            await SendMailAsync(to, $"{orderCode} Sipariş Numaralı", mail);
         }
 
         public async Task SendMailAsync(string to, string subject, string body, bool isBodyHtml = true)
