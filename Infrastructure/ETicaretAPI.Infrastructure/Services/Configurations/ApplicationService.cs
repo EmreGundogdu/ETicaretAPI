@@ -48,7 +48,7 @@ namespace ETicaretAPI.Infrastructure.Services.Configurations
                                     _action.HttpType = httpAttribute.HttpMethods.First();
                                 else
                                     _action.HttpType = HttpMethods.Get;
-                                _action.Code = $"{_action.HttpType}.{_action.ActionType}.{_action.Definition.Replace(" ","")}"
+                                _action.Code = $"{_action.HttpType}.{_action.ActionType}.{_action.Definition.Replace(" ", "")}";
                                 menu.Actions.Add(_action);
                             }
                         }
