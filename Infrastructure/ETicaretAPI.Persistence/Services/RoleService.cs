@@ -20,19 +20,19 @@ namespace ETicaretAPI.Persistence.Services
 
         public async Task<bool> CreateRole(string name)
         {
-            var result = await roleManager.CreateAsync(new() { Name = name });
+            var result = await roleManager.CreateAsync(new() {Id=Guid.NewGuid().ToString(), Name = name });
             return result.Succeeded;
         }
 
-        public async Task<bool> DeleteRole(string name)
+        public async Task<bool> DeleteRole(string id)
         {
-            var result = await roleManager.DeleteAsync(new() { Name = name });
+            var result = await roleManager.DeleteAsync(new() { Id = id });
             return result.Succeeded;
         }
 
-        public IDictionary<string, string> GetAllRoles()
+        public object GetAllRoles(int page,int pageSize)
         {
-            return roleManager.Roles.ToDictionary(role => role.Id, role => role.Name);
+            return roleManager.Roles.Skip(page * pageSize).Take(pageSize).Select(x => new {x.Id,x.Name});
         }
 
         public async Task<(string id, string name)> GetRoleById(string id)
