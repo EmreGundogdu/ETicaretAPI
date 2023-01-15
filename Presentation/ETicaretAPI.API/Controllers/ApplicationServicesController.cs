@@ -18,7 +18,7 @@ namespace ETicaretAPI.API.Controllers
         public IActionResult GetAuthroizeDefinitionEndpoints(Type type)
         {
             var datas = applicationService.GetAuthorizeDefinitionEndpoints(typeof(Program));
-            return Ok();
+            return Ok(datas);
         }
     }
 }
