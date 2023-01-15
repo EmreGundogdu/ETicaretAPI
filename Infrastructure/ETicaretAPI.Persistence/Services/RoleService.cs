@@ -26,13 +26,15 @@ namespace ETicaretAPI.Persistence.Services
 
         public async Task<bool> DeleteRole(string id)
         {
-            var result = await roleManager.DeleteAsync(new() { Id = id });
+            var role = await roleManager.FindByIdAsync(id);
+            var result = await roleManager.DeleteAsync(role);
             return result.Succeeded;
         }
 
-        public object GetAllRoles(int page,int pageSize)
+        public (object,int) GetAllRoles(int page,int pageSize)
         {
-            return roleManager.Roles.Skip(page * pageSize).Take(pageSize).Select(x => new {x.Id,x.Name});
+            var data = roleManager.Roles.Skip(page * pageSize).Take(pageSize).Select(x => new { x.Id, x.Name })
+            return (data,data.Count());
         }
 
         public async Task<(string id, string name)> GetRoleById(string id)
@@ -43,7 +45,9 @@ namespace ETicaretAPI.Persistence.Services
 
         public async Task<bool> UpdateRole(string id, string name)
         {
-            var result = await roleManager.UpdateAsync(new() { Id = id, Name = name });
+            var role = await roleManager.FindByIdAsync(id);
+            role.Name = name;
+            var result = await roleManager.UpdateAsync(role);
             return result.Succeeded;
 
         }

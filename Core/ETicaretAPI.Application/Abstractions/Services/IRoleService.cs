@@ -8,7 +8,7 @@ namespace ETicaretAPI.Application.Abstractions.Services
 {
     public interface IRoleService
     {
-        object GetAllRoles(int page,int pageSize);
+        (object,int) GetAllRoles(int page,int pageSize);
         Task<(string id,string name)> GetRoleById(string id);
         Task<bool> CreateRole(string name);
         Task<bool> DeleteRole(string id);
