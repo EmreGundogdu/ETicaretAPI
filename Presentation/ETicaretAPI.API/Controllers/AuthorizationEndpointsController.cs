@@ -10,7 +10,7 @@ namespace ETicaretAPI.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-
+            return Ok();
         }
     }
 }
