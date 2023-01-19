@@ -71,7 +71,11 @@ namespace ETicaretAPI.Persistence.Services
         public async Task<List<string>> GetRolesToEndpoint(string cod,string menu)
         {
             var endpoint = await endpointReadRepository.Table.Include(x => x.AppRoles).Include(x=>x.Menu).FirstOrDefaultAsync(x => x.Code == cod&&x.Menu.Name==menu);
-            return endpoint.AppRoles.Select(x => x.Name).ToList();
+            if (endpoint is not null)
+            {
+                return endpoint.AppRoles.Select(x => x.Name).ToList();
+            }
+            return null;
         }
     }
 }
