@@ -6,5 +6,7 @@ namespace ETicaretAPI.Application.Features.Commands.AuthorizationEndpoints.Assig
     {
         public string[] Roles { get; set; }
         public string EndpointCode { get; set; }
+        public string Menu { get; set; }
+        public Type? Type { get; set; }
     }
 }
