@@ -5,6 +5,7 @@ using ETicaretAPI.Application.Helpers;
 using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace ETicaretAPI.Persistence.Services
@@ -17,6 +18,7 @@ namespace ETicaretAPI.Persistence.Services
         {
             this.userManager = userManager;
         }
+
 
         public async Task<CreateUserResponse> CreateAsync(CreateUser createUser)
         {
@@ -36,13 +38,28 @@ namespace ETicaretAPI.Persistence.Services
             return response;
         }
 
+        public async Task<List<ListUser>> GetAllUsersAsync(int page,int pageSize)
+        {
+           var users = await userManager.Users.Skip(page*pageSize).Take(pageSize).ToListAsync();
+            return users.Select(user => new ListUser
+            {
+                Id =user.Id,
+                Email =user.Email,
+                NameSurname = user.NameSurname,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                UserName = user.UserName
+            }).ToList();
+        }
+        public int TotalUsersCount => userManager.Users.Count();
+
+
         public async Task UpdatePasswordAsync(string userId, string resetToken, string newPassword)
         {
-           AppUser appUser = await userManager.FindByIdAsync(userId);
-            if (appUser!=null)
+            AppUser appUser = await userManager.FindByIdAsync(userId);
+            if (appUser != null)
             {
                 resetToken = resetToken.UrlDecode();
-                IdentityResult identityResult = await userManager.ResetPasswordAsync(appUser,resetToken,newPassword);
+                IdentityResult identityResult = await userManager.ResetPasswordAsync(appUser, resetToken, newPassword);
                 if (identityResult.Succeeded)
                     await userManager.UpdateSecurityStampAsync(appUser);
                 else
