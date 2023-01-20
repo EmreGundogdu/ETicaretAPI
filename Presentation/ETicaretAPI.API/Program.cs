@@ -1,5 +1,6 @@
 using ETicaretAPI.API.Configurations.ColumnWriters;
 using ETicaretAPI.API.Extensions;
+using ETicaretAPI.API.Filters;
 using ETicaretAPI.Application;
 using ETicaretAPI.Application.Validators.Products;
 using ETicaretAPI.Infrastructure;
@@ -56,6 +57,7 @@ builder.Services.AddCors(opt =>
 builder.Services.AddControllers(opt =>
 {
     opt.Filters.Add<ValidationFilter>();
+    opt.Filters.Add<RolePermissionFilter>();
 }).AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>()).ConfigureApiBehaviorOptions(x => x.SuppressModelStateInvalidFilter = true);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin", opt =>
