@@ -38,13 +38,13 @@ namespace ETicaretAPI.Persistence.Services
             return response;
         }
 
-        public async Task<List<ListUser>> GetAllUsersAsync(int page,int pageSize)
+        public async Task<List<ListUser>> GetAllUsersAsync(int page, int pageSize)
         {
-           var users = await userManager.Users.Skip(page*pageSize).Take(pageSize).ToListAsync();
+            var users = await userManager.Users.Skip(page * pageSize).Take(pageSize).ToListAsync();
             return users.Select(user => new ListUser
             {
-                Id =user.Id,
-                Email =user.Email,
+                Id = user.Id,
+                Email = user.Email,
                 NameSurname = user.NameSurname,
                 TwoFactorEnabled = user.TwoFactorEnabled,
                 UserName = user.UserName
@@ -80,6 +80,28 @@ namespace ETicaretAPI.Persistence.Services
                 throw new NotFoundUserException();
 
             }
+        }
+
+        public async Task AssignRoleToUserAsync(string userId, string[] roles)
+        {
+            var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser is not null)
+            {
+                var userRoles = await userManager.GetRolesAsync(appUser);
+                await userManager.RemoveFromRolesAsync(appUser, userRoles);
+                await userManager.AddToRolesAsync(appUser, roles);
+            }
+        }
+
+        public async Task<string[]> GetRolesToUserAsync(string userId)
+        {
+            var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser is not null)
+            {
+                var userRoles = await userManager.GetRolesAsync(appUser);
+                return userRoles.ToArray();
+            }
+            return new string[] { };
         }
     }
 }
