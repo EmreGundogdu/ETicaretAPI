@@ -36,7 +36,7 @@ namespace ETicaretAPI.Persistence.Services
 
                     ID = Guid.NewGuid(),
                     Name = menu
-                }
+                };
                 await menuWriteRepository.AddAsync(_menu);
                 await menuWriteRepository.SaveAsync();
             }
