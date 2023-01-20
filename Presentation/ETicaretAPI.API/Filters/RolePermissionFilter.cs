@@ -28,7 +28,7 @@ namespace ETicaretAPI.API.Filters
                 var httpAttribute = descriptor.MethodInfo.GetCustomAttribute(typeof(HttpMethodAttribute)) as HttpMethodAttribute;
 
                 var code = $"{(httpAttribute != null ? httpAttribute.HttpMethods.First() : HttpMethods.Get)}.{attribute.ActionType}.{attribute.Definition.Replace(" ", "")}";
-                var hasRole = await userService.HasRolePermissionToEndpointAsync(name,code);
+                var hasRole = await userService.HasRolePermissionToEndpointAsync(name, code);
                 if (!hasRole)
                 {
                     context.Result = new UnauthorizedResult();
@@ -38,7 +38,8 @@ namespace ETicaretAPI.API.Filters
                     await next();
                 }
             }
-            await next();
+            else
+                await next();
 
         }
     }
